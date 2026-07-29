@@ -1,0 +1,322 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexoraVPN</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles-canvas"></div>
+    
+    <!-- Animated Gradient Background -->
+    <div class="gradient-bg">
+        <div class="gradient-sphere gs1"></div>
+        <div class="gradient-sphere gs2"></div>
+        <div class="gradient-sphere gs3"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <nav class="navbar glass-card">
+            <div class="nav-brand">
+                <i class="fas fa-shield-halved"></i>
+                <span>NexoraVPN</span>
+            </div>
+            <div class="nav-stats">
+                <div class="stat-item" id="live-clock">00:00:00</div>
+                <div class="stat-item"><i class="fas fa-bolt"></i> <span id="cpu-monitor">0%</span></div>
+                <div class="stat-item"><i class="fas fa-microchip"></i> <span id="ram-monitor">0%</span></div>
+            </div>
+            <div class="nav-actions">
+                <button class="icon-btn" id="theme-toggle" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                <button class="icon-btn" id="lang-toggle" title="Language"><i class="fas fa-language"></i></button>
+                <button class="icon-btn" id="notif-btn" title="Notifications"><i class="fas fa-bell"></i></button>
+            </div>
+        </nav>
+
+        <!-- Main Content Grid -->
+        <div class="main-grid">
+            <!-- Left Sidebar -->
+            <aside class="sidebar glass-card">
+                <div class="connection-status" id="connection-status">
+                    <div class="status-indicator disconnected"></div>
+                    <span class="status-text">Disconnected</span>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn primary-btn" id="connect-btn">
+                        <i class="fas fa-power-off"></i>
+                        <span>Connect</span>
+                    </button>
+                    <button class="btn secondary-btn" id="quick-connect-btn">
+                        <i class="fas fa-bolt"></i>
+                        <span>Quick</span>
+                    </button>
+                    <button class="btn secondary-btn" id="auto-connect-toggle">
+                        <i class="fas fa-toggle-off"></i>
+                        <span>Auto</span>
+                    </button>
+                </div>
+                <div class="vpn-features">
+                    <div class="feature-item" data-feature="killswitch">
+                        <i class="fas fa-skull"></i>
+                        <span>Kill Switch</span>
+                        <label class="switch"><input type="checkbox" id="killswitch-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="feature-item" data-feature="splittunnel">
+                        <i class="fas fa-code-branch"></i>
+                        <span>Split Tunnel</span>
+                        <label class="switch"><input type="checkbox" id="splittunnel-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="feature-item" data-feature="doublevpn">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Double VPN</span>
+                        <label class="switch"><input type="checkbox" id="doublevpn-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="feature-item" data-feature="multihop">
+                        <i class="fas fa-arrows-spin"></i>
+                        <span>Multi-Hop</span>
+                        <label class="switch"><input type="checkbox" id="multihop-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="feature-item" data-feature="smartroute">
+                        <i class="fas fa-route"></i>
+                        <span>Smart Routing</span>
+                        <label class="switch"><input type="checkbox" id="smartroute-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="feature-item" data-feature="autoreconnect">
+                        <i class="fas fa-rotate"></i>
+                        <span>Auto Reconnect</span>
+                        <label class="switch"><input type="checkbox" id="autoreconnect-toggle"><span class="slider"></span></label>
+                    </div>
+                </div>
+                <div class="protocol-selector">
+                    <label>Protocol</label>
+                    <select id="protocol-select">
+                        <option>WireGuard</option>
+                        <option>OpenVPN (UDP)</option>
+                        <option>OpenVPN (TCP)</option>
+                        <option>IKEv2</option>
+                    </select>
+                </div>
+            </aside>
+
+            <!-- Center Content -->
+            <main class="center-content">
+                <!-- Globe Container -->
+                <div class="globe-container glass-card">
+                    <div id="globe-3d-container"></div>
+                    <div class="globe-overlay-info">
+                        <div class="connected-location" id="connected-location">
+                            <i class="fas fa-location-dot"></i>
+                            <span>Not Connected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Server Search & Filters -->
+                <div class="server-controls glass-card">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="server-search" placeholder="Search servers...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="country-filter"><option value="all">All Countries</option></select>
+                        <select id="city-filter"><option value="all">All Cities</option></select>
+                        <select id="purpose-filter">
+                            <option value="all">All Types</option>
+                            <option value="streaming">Streaming</option>
+                            <option value="gaming">Gaming</option>
+                            <option value="torrent">Torrent</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Server List -->
+                <div class="server-list glass-card" id="server-list">
+                    <!-- Servers rendered by JS -->
+                </div>
+            </main>
+
+            <!-- Right Panel -->
+            <aside class="right-panel glass-card">
+                <!-- Connection Info -->
+                <div class="connection-info">
+                    <h3><i class="fas fa-circle-info"></i> Connection</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><span>Public IP</span><span id="public-ip">0.0.0.0</span></div>
+                        <div class="info-item"><span>Private IP</span><span id="private-ip">10.0.0.1</span></div>
+                        <div class="info-item"><span>Ping</span><span id="ping-display">0 ms</span></div>
+                        <div class="info-item"><span>Download</span><span id="download-speed">0 Mbps</span></div>
+                        <div class="info-item"><span>Upload</span><span id="upload-speed">0 Mbps</span></div>
+                        <div class="info-item"><span>Connection Time</span><span id="conn-time">00:00</span></div>
+                        <div class="info-item"><span>Server Load</span><span id="server-load">0%</span></div>
+                        <div class="info-item"><span>Encryption</span><span id="encryption-status">AES-256</span></div>
+                        <div class="info-item"><span>Network Quality</span><span id="network-quality">--</span></div>
+                        <div class="info-item"><span>Data Used</span><span id="data-used">0 MB</span></div>
+                    </div>
+                </div>
+
+                <!-- Security Score -->
+                <div class="security-score">
+                    <h3>Privacy Score</h3>
+                    <div class="gauge-container">
+                        <canvas id="privacy-gauge" width="140" height="140"></canvas>
+                        <div class="gauge-value" id="privacy-score">85</div>
+                    </div>
+                </div>
+
+                <!-- Protection Status -->
+                <div class="protection-status">
+                    <h3>Protection</h3>
+                    <div class="protection-item"><i class="fas fa-shield"></i> <span>DNS Protection</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-globe"></i> <span>IPv6 Protection</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-camera"></i> <span>WebRTC Protection</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-bug"></i> <span>Malware Shield</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-ban"></i> <span>Ad Blocker</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-eye-slash"></i> <span>Tracker Blocker</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-cookie"></i> <span>Cookie Cleaner</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-fire"></i> <span>Firewall</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-signal"></i> <span>Wi-Fi Security</span> <i class="fas fa-check-circle active"></i></div>
+                    <div class="protection-item"><i class="fas fa-heart"></i> <span>VPN Health</span> <span class="health-value">98%</span></div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="bottom-bar glass-card">
+            <div class="bottom-stats">
+                <span><i class="fas fa-clock"></i> Session: <span id="session-timer">00:00:00</span></span>
+                <span><i class="fas fa-database"></i> Data: <span id="bottom-data">0 MB</span></span>
+                <span><i class="fas fa-server"></i> Servers: <span id="server-count">0</span></span>
+                <span><i class="fas fa-bolt"></i> Speed: <span id="bottom-speed">0 Mbps</span></span>
+                <span><i class="fas fa-shield"></i> Status: <span id="bottom-status">Disconnected</span></span>
+            </div>
+            <div class="bottom-actions">
+                <button class="icon-btn" id="history-btn" title="Connection History"><i class="fas fa-history"></i></button>
+                <button class="icon-btn" id="speedtest-btn" title="Speed Test"><i class="fas fa-gauge-high"></i></button>
+                <button class="icon-btn" id="settings-btn" title="Settings"><i class="fas fa-gear"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- History Modal -->
+    <div class="modal" id="history-modal">
+        <div class="modal-content glass-card">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-history"></i> Connection History</h2>
+            <div class="modal-body" id="history-list"></div>
+        </div>
+    </div>
+
+    <!-- Speed Test Modal -->
+    <div class="modal" id="speedtest-modal">
+        <div class="modal-content glass-card">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-gauge-high"></i> Speed Test</h2>
+            <div class="modal-body">
+                <div class="speedtest-gauge">
+                    <canvas id="speedtest-canvas" width="200" height="200"></canvas>
+                    <div class="speedtest-value" id="speedtest-result">0 Mbps</div>
+                </div>
+                <button class="btn primary-btn" id="run-speedtest">Run Speed Test</button>
+                <div class="speedtest-details">
+                    <div><span>Ping:</span> <span id="st-ping">--</span></div>
+                    <div><span>Download:</span> <span id="st-download">--</span></div>
+                    <div><span>Upload:</span> <span id="st-upload">--</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content glass-card settings-content">
+            <span class="modal-close">&times;</span>
+            <h2><i class="fas fa-gear"></i> Settings</h2>
+            <div class="modal-body settings-body">
+                <div class="setting-group">
+                    <h3>Theme</h3>
+                    <div class="setting-item">
+                        <span>Dark / Light Mode</span>
+                        <label class="switch"><input type="checkbox" id="settings-theme-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Accent Color</span>
+                        <input type="color" id="accent-color-picker" value="#00d4ff">
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <h3>Connection</h3>
+                    <div class="setting-item">
+                        <span>Auto Connect</span>
+                        <label class="switch"><input type="checkbox" id="settings-autoconnect"><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Auto Reconnect</span>
+                        <label class="switch"><input type="checkbox" id="settings-autoreconnect"><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>Kill Switch</span>
+                        <label class="switch"><input type="checkbox" id="settings-killswitch"><span class="slider"></span></label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <h3>Privacy</h3>
+                    <div class="setting-item">
+                        <span>DNS Protection</span>
+                        <label class="switch"><input type="checkbox" id="settings-dns" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>IPv6 Leak Protection</span>
+                        <label class="switch"><input type="checkbox" id="settings-ipv6" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <span>WebRTC Leak Protection</span>
+                        <label class="switch"><input type="checkbox" id="settings-webrtc" checked><span class="slider"></span></label>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <h3>General</h3>
+                    <div class="setting-item">
+                        <span>Language</span>
+                        <select id="settings-language">
+                            <option>English</option>
+                            <option>Español</option>
+                            <option>Français</option>
+                            <option>Deutsch</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <span>Export Settings</span>
+                        <button class="btn small-btn" id="export-settings"><i class="fas fa-download"></i> Export</button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Import Settings</span>
+                        <button class="btn small-btn" id="import-settings"><i class="fas fa-upload"></i> Import</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Threat Detection Popup -->
+    <div class="threat-popup" id="threat-popup">
+        <div class="threat-content glass-card">
+            <i class="fas fa-shield-halved"></i>
+            <div class="threat-text">
+                <strong>Threat Blocked</strong>
+                <span id="threat-msg">Malicious connection attempt blocked</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
